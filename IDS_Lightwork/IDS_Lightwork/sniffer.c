@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #define SNAP_LEN 1518 //max number of bytes per packet to capture
 #define SIZE_ETHERNET 14 //14 bytes for ethernet headers
@@ -88,6 +89,7 @@ struct attacker {
 void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 void print_payload(const u_char *payload, int len);
 void print_hex_ascii_line(const u_char *payload, int len, int offset);
+void log_alerts(char * ip_address);
 
 /*
  * print data in rows of 16 bytes: offset   hex   ascii
@@ -178,9 +180,20 @@ void print_payload(const u_char *payload, int len) {
    return;
 }
 
-void
-got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
-{
+void log_alerts(char * ip_address){
+    FILE *file = fopen("alerts.txt", "a");
+    struct timespec ts;
+    
+    if (file == NULL) {
+        printf("Error!\n");
+        return ;
+    }
+    clock_gettime(CLOCK_REALTIME, &ts);
+    fprintf(file, "{\"attacker_ip\": \"%s\", \"type\": \"SYN scan\", \"timestamp\": %ld}\n", ip_address, ts.tv_sec);
+    fclose(file);
+}
+
+void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
    #define MAX_ARRAY_SIZE 100
     static int count = 1;                   /* packet counter */
 
@@ -256,13 +269,12 @@ got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
                 tracked_attackers[i].SYN_count++;
                 if (tracked_attackers[i].SYN_count == 20) {
                     printf("[!!!] PORT SCAN DETECTED [!!!]\n");
-                    
+                    log_alerts(inet_ntoa(tracked_attackers[i].ip_address));
                 }
                 found = 1;
                 break;
             }
         }
-        
         if (found == 0) {
             if ((unique_attacker_count < MAX_ARRAY_SIZE)) {
                 tracked_attackers[unique_attacker_count].ip_address = ip->ip_src;
@@ -294,23 +306,24 @@ got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 return;
 }
 
+
+
 int main(int argc, char * argv[]) {
     char *dev, errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle; // session handler
-    pcap_if_t *alldevs; // This is a struct that holds the list of devices
+    //pcap_if_t *alldevs; // This is a struct that holds the list of devices
     bpf_u_int32 mask; //subnet mask
     bpf_u_int32 net; //IP
-    int num_packets = 10; //number of packets to capture
+    int num_packets = -1; //number of packets to capture
     int dl_header_size;
-    struct pcap_pkthdr header;
-    const u_char *packet;
     
-    if(pcap_findalldevs(&alldevs,errbuf)==-1){
-        fprintf(stderr, "Error finding devices: %s\n", errbuf);
-        return(2);
-    };
-    dev = alldevs->name; //Grab the name of the very first device in the list
+    //if(pcap_findalldevs(&alldevs,errbuf)==-1){
+        //fprintf(stderr, "Error finding devices: %s\n", errbuf);
+        //return(2);
+    //};
+    //dev = alldevs->name; //Grab the name of the very first device in the list
     //printf("Device found: %s\n", dev);
+    dev = "lo0";
     
     if (pcap_lookupnet(dev, &net, &mask, errbuf)==-1) {
         fprintf(stderr, "Couldn't get netmask for device %s: %s\n",dev, errbuf);
@@ -344,7 +357,7 @@ int main(int argc, char * argv[]) {
      //printf("Jacked a packet with length of [%d]\n", header.len);
     pcap_loop(handle, num_packets, got_packet, (u_char *)&dl_header_size);
     pcap_close(handle);
-    pcap_freealldevs(alldevs);
+    //pcap_freealldevs(alldevs);
     printf("\nCapture complete.\n");
     return 0;
 }
