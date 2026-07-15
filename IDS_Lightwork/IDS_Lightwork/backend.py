@@ -1,9 +1,10 @@
+#to run do python3 backend.py on terminal first and go to http://127.0.0.1:5000/api/alerts
 import json
 import sqlite3
 from flask import Flask, jsonify,request,g
 
 app = Flask(__name__)
-DATABASE = "IDS_datbase.db"
+DATABASE = "IDS_database.db"
 #connection = sqlite3.connect('IDS_database.db')
 
 def get_db():
@@ -30,7 +31,28 @@ def process_logs():
             for line in lines:
                 alert_data = json.loads(line)
                 db = get_db()
-                cursor = db.cursor
-                cursor.execute("INSERT INTO table_name (IP_Address, Type, Timestamp) VALUES (?, ?, ?)", (IP_Address, Type, Timestamp))
+                cursor = db.cursor()
+                cursor.execute('INSERT INTO "SYN LOGS" (IP_Address, Type, Timestamp) VALUES (?, ?, ?)', (alert_data['attacker_ip'], alert_data['type'], alert_data['timestamp']))
 
-            db.commit
+            db.commit()
+            with open('alerts.txt', 'w') as file:
+                return
+    except FileNotFoundError:
+        print("No alerts file found yet. Waiting for the C sniffer...")
+
+@app.route('/api/alerts', methods=['GET'])
+def get_alerts():
+    process_logs()
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute('SELECT * FROM "SYN LOGS" ORDER BY Timestamp DESC')
+    rows = cursor.fetchall()
+    data = [dict(row) for row in rows]
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
+
+

@@ -323,7 +323,8 @@ int main(int argc, char * argv[]) {
     //};
     //dev = alldevs->name; //Grab the name of the very first device in the list
     //printf("Device found: %s\n", dev);
-    dev = "lo0";
+    //dev = "en0";
+    dev = "lo0"; //localhost
     
     if (pcap_lookupnet(dev, &net, &mask, errbuf)==-1) {
         fprintf(stderr, "Couldn't get netmask for device %s: %s\n",dev, errbuf);
