@@ -1,7 +1,9 @@
 #to run do python3 backend.py on terminal first and go to http://127.0.0.1:5000/api/alerts
+#sudo nmap -sS -p 1-100 -D RND:10 localhost (nmap scan)
+
 import json
 import sqlite3
-from flask import Flask, jsonify,request,g
+from flask import Flask, jsonify,request,g, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -42,7 +44,11 @@ def process_logs():
     except FileNotFoundError:
         print("No alerts file found yet. Waiting for the C sniffer...")
 
-@app.route('/api/alerts', methods=['GET'])
+@app.route('/')
+def index():
+    return render_template('index.html')        
+
+@app.route('/api/alerts')
 def get_alerts():
     process_logs()
 
@@ -55,6 +61,6 @@ def get_alerts():
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(debug=True)
 
 

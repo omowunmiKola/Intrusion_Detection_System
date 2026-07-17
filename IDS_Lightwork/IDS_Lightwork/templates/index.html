@@ -52,7 +52,7 @@
         // 5. Loop through the data and add rows to the tbody
         async function fetch_alerts(){
             try{
-                let response = await fetch('http://127.0.0.1:5000/api/alerts');
+                let response = await fetch('/api/alerts');
                 let data = await response.json();
                 
                 var tbl = document.getElementById("alert-data-container");
