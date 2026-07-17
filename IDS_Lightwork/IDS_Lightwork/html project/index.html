@@ -29,9 +29,10 @@
         <table class="w-full text-left">
             <thead>
                 <tr class="border-b border-slate-700">
+                    <th class="p-2">ID</th>
                     <th class="p-2">Attacker IP</th>
-                    <th class="p-2">Attack Type</th>
                     <th class="p-2">Timestamp</th>
+                    <th class="p-2">Attack Type</th>
                 </tr>
             </thead>
             <!-- Give this tbody an ID so your JavaScript knows exactly where to inject the data! -->
@@ -61,13 +62,18 @@
                 data.forEach(item => {
                     const row = document.createElement("tr");
                     
-                    // We use Object.values() to get just the data points (IP, Type, Timestamp)
-                    Object.values(item).forEach(value => {
-                      const td = document.createElement("td");
-                      td.textContent = value;
-                      td.className = "p-2 border-b border-slate-700";
-                      row.appendChild(td);
-                    });
+                    // Grab the raw time and multiply by 1000 for JavaScript
+                    let rawTime = item.Timestamp; 
+                    let dateObject = new Date(rawTime * 1000);dateObject
+                    let readableTime = dateObject.toLocaleString();
+                    
+                    row.innerHTML = `
+                        <td class="p-2 border-b border-slate-700">${item.ID}</td>
+                        <td class="p-2 border-b border-slate-700">${item.IP_Address}</td>
+                        <td class="p-2 border-b border-slate-700 text-yellow-400">${readableTime}</td>
+                        <td class="p-2 border-b border-slate-700">${item.Type}</td>
+                    `;
+                    
                 tbl.appendChild(row);
               });
                 
