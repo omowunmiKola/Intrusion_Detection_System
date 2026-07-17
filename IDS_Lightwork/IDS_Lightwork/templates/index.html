@@ -22,6 +22,9 @@
         <button class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-bold" type="button" onclick="fetch_alerts()">
             Fetch Latest Alerts
         </button>
+        <button onclick="resetLogs()" class="bg-red-600 px-4 py-2 rounded">
+            Clear Logs
+        </button>
     </div>
 
     <!-- ZONE 3: The Data Table -->
@@ -82,6 +85,10 @@
                 console.error('Error fetching data:', error);
             }
         }
+        async function resetLogs() {
+             await fetch('/api/reset', { method: 'POST' });
+             fetch_alerts(); // Refresh the table after clearing
+              } 
     </script>
 </body>
 </html>

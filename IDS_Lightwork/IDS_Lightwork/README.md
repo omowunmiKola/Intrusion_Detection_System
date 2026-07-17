@@ -33,7 +33,7 @@ Instead of starting the C sniffer, Python server, and web dashboard manually, th
    chmod +x start_ids.sh
 
 - **Launch the pipeline:**  
-   ./start*ids.sh  
+   ./start_ids.sh  
    <br/>\_Note: Because the C sniffer requires direct access to your network interface card (Promiscuous Mode), the terminal will ask for your sudo (administrator) password.*
 
 The script will automatically compile the latest C code, boot the Flask server in the background, open the index.html dashboard in your default browser, and start the C sniffer in the foreground.

@@ -57,8 +57,20 @@ def get_alerts():
 
     cursor.execute('SELECT * FROM "SYN LOGS" ORDER BY Timestamp DESC')
     rows = cursor.fetchall()
+    db.close
+
     data = [dict(row) for row in rows]
     return jsonify(data)
+
+@app.route('/api/reset', methods=['POST'])
+def reset_logs():
+    db = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute('DELETE FROM "SYN LOGS";')
+    db.commit()
+    db.close()
+    return jsonify({"status": "Logs cleared!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
