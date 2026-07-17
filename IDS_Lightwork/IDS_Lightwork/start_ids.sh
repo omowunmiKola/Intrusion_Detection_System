@@ -16,7 +16,9 @@ python3 backend.py &
 
 sleep 4
 
-open http://127.0.0.1:5000
+open http://127.0.0.1:5000 &
+
+sleep 2
 
 echo "[3/4] Starting C Sensor (Requires password for promiscuous mode)..."
 sudo ./sniffer
