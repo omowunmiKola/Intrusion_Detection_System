@@ -62,3 +62,5 @@ When you are finished testing the IDS, return to your **first terminal** (where 
 - **Deactivate the Python environment:**  
    deactivate  
    <br/>_(Your terminal prompt will return to normal, indicating you have exited the virtual environment)._
+- **BUGS IN THIS VERSION**
+  The website button will not work if backend.py is started using the .sh file. To retrieve logs with the button, stop the sniffer, run python3 backend.py in the terminal, and then click the button.

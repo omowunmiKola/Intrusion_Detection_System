@@ -11,15 +11,10 @@ echo "INITIATING IDS PIPELINE..."
 echo "[1/4] Compiling C Sniffer..."
 gcc -o sniffer sniffer.c -lpcap
 
-echo "[2/4] Starting Python Backend Server..."
-python3 backend.py &
-
-sleep 4
-
 open http://127.0.0.1:5000 &
 
-sleep 2
+sleep 3
 
-echo "[3/4] Starting C Sensor (Requires password for promiscuous mode)..."
+echo "[2/4] Starting C Sensor (Requires password for promiscuous mode)..."
 sudo ./sniffer
 
