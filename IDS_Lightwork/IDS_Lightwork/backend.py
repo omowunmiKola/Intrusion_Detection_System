@@ -2,8 +2,10 @@
 import json
 import sqlite3
 from flask import Flask, jsonify,request,g
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 DATABASE = "IDS_database.db"
 #connection = sqlite3.connect('IDS_database.db')
 
