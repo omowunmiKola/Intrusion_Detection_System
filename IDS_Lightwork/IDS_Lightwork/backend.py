@@ -65,7 +65,7 @@ def get_alerts():
 @app.route('/api/reset', methods=['POST'])
 def reset_logs():
     db = get_db()
-    cursor = conn.cursor()
+    cursor = db.cursor()
 
     cursor.execute('DELETE FROM "SYN LOGS";')
     db.commit()
